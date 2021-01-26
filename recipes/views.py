@@ -1,14 +1,47 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils import timezone
 
-from .models import User
+from .models import User, Recipe
+from .forms import RecipeForm, IngredientFormSet, InstructionFormSet
 
 # Create your views here.
 def index(request):
-    return render(request, "recipes/index.html")
+    recipes = Recipe.objects.all()
+    return render(request, "recipes/index.html", {'recipes': recipes})
+
+def new_recipe(request):
+    if request.method == "POST":
+        recipe_form = RecipeForm(request.POST, request.FILES)
+        ingredient_form = IngredientFormSet(request.POST)
+        instruction_form = InstructionFormSet(request.POST)
+        print(recipe_form)
+        recipe_valid = recipe_form.is_valid()
+        print(recipe_valid)
+        ingredient_valid = ingredient_form.is_valid()
+        instruction_valid = instruction_form.is_valid()
+        if recipe_valid and ingredient_valid and instruction_valid:
+            recipe = recipe_form.save(commit=False)
+            recipe.author = request.user
+            recipe.published_date = timezone.now()
+            recipe = recipe_form.save()
+            ingredient_form.instance = recipe
+            ingredient_form.save()
+            instruction_form.instance = recipe
+            instruction_form.save()
+            return redirect('index') 
+    else:
+        recipe_form = RecipeForm()
+        ingredient_form = IngredientFormSet()
+        instruction_form = InstructionFormSet()
+        return render(request, "recipes/edit.html", {'recipe_form': recipe_form, 'ingredient_form': ingredient_form, 'instruction_form': instruction_form})
+
+def recipe_detail(request, pk):
+    recipe = get_object_or_404(Recipe, pk=pk)
+    return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
 
 
 def login_view(request):

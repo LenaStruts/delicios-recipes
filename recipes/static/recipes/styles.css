@@ -1,0 +1,9 @@
+.help {
+    text-align: left;
+}
+
+input,
+select {
+    width: 13rem;
+    height: 2rem;
+}
