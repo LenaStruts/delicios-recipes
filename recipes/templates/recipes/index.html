@@ -2,6 +2,19 @@
 {% load static %}
 
 {% block body %}
+<div id="recipe" class="col-md-7">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="image">
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div id="ingredients">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="recipes">
 <a class="btn btn-secondary" href="{% url 'new_recipe' %}">Add recipe</a>
 {% for recipe in recipes %}
     <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
@@ -13,7 +26,7 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a class="recipe-detail" href="{% url 'recipe_detail' pk=recipe.pk %}">{{ recipe.title }}</a>
+                                <a class="recipe-detail" id="{{recipe.pk}}">{{ recipe.title }}</a>
                             </h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ recipe.category }}</h6>
                             <p class="card-text">Cooking time: {{ recipe.time }}</p>
@@ -24,7 +37,10 @@
             </div>
         </div>
 {% endfor %}
+</div>
 {% endblock %}
 
 {% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="{% static 'recipes/index.js' %}"></script>
 {% endblock %}

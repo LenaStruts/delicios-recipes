@@ -28,13 +28,30 @@ class Recipe(models.Model):
     category = models.CharField(max_length=64, blank=True, choices=Categories.choices)
     time = DurationField()
     published_date = models.DateTimeField(auto_now_add=True)
-    
+
+    def serialize(self, user=None):
+        return {
+            "author": self.author.username,
+            "title": self.title,
+            "photo": self.photo.url,
+            "category": self.category,
+            "time": self.time,
+            "published_date": self.published_date,
+            "id": self.id,
+            "added": not user.is_anonymous and self.recipes.filter(owner=user).exists()
+        }
+
 
 class Instructions(models.Model):
     step = models.TextField()
     time = DurationField()
     recipe = models.ForeignKey('recipes.Recipe', on_delete=models.CASCADE, related_name='recipe_instructions')
 
+    def serialize(self):
+        return {
+            "step": self.step,
+            "time": self.time
+        }
 
 class Ingredients(models.Model):
 
@@ -51,6 +68,14 @@ class Ingredients(models.Model):
     measurement = models.CharField(max_length=64, choices=Measurements.choices)
     recipe = models.ForeignKey('recipes.Recipe', on_delete=models.CASCADE, related_name='recipe_ingredients')
 
+    def serialize(self, user=None):
+        return {
+            "ingredient": self.ingredient,
+            "amount": self.amount,
+            "measurement": self.measurement,
+            "id": self.id,
+            "in_list": not user.is_anonymous and self.recipe_ingredient.filter(shopper=user).exists()
+        }
 
 class RecipeBook(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='book_owner')
@@ -59,4 +84,5 @@ class RecipeBook(models.Model):
 
 class ShoppingList(models.Model):
     shopper = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='list_owner')
-    ingredients = models.ForeignKey('recipes.Ingredients', on_delete=models.CASCADE, related_name='total_ingredients') 
+    ingredient = models.ForeignKey('recipes.Ingredients', on_delete=models.CASCADE, related_name='recipe_ingredient')
+

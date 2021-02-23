@@ -1,56 +1,137 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let ingredientForm = document.querySelectorAll(".ingredient-form");
-    let containerIngredient = document.getElementById("container-ingredient-formset");
-    let addIngredient = document.getElementById("add-ingredient-form");
-    let removeIngredient = document.getElementById("remove-ingredient-form");
-    let totalIngredientForms = document.getElementById("id_recipe_ingredients-TOTAL_FORMS");
+    let link = document.querySelectorAll(".recipe-detail");
+    link.forEach((element) => {
+        element.addEventListener("click", () => {
+            id = element.id;
+            load_recipe(id);
+        });
+    });
+    // let button = document.querySelector(".add");
+    // id = button.id;
+    // button.addEventListener('click', () => addBook(id));
+})
 
-    let instructionForm = document.querySelectorAll(".instruction-form");
-    let containerInstruction = document.getElementById("container-instruction-formset");
-    let addInstruction = document.getElementById("add-instruction-form");
-    let removeInstruction = document.getElementById("remove-instruction-form");
-    let totalInstructionForms = document.getElementById("id_recipe_instructions-TOTAL_FORMS");
+function addBook(x, id) {
+    const added = !x.classList.contains('fas');
+    fetch(`/recipe/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                added
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.error) {
+                console.log(error);
+            } else {
+                x.classList.toggle("far");
+                x.classList.toggle("fas");
+            }
+        })
+}
 
-    let formIngredientNum = ingredientForm.length - 1;
-    let formInstructionNum = instructionForm.length - 1;
-    removeIngredient.addEventListener('click', removeIngredientForm);
-    addIngredient.addEventListener('click', addIngredientForm);
-    removeInstruction.addEventListener('click', removeInstructionForm);
-    addInstruction.addEventListener('click', addInstructionForm);
+function addList(x, id) {
+    const in_list = !x.classList.contains('fa-plus');
+    fetch(`/ingredient/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                in_list
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.error) {
+                console.log(error);
+            } else {
+                x.classList.toggle("fa-minus");
+                x.classList.toggle("fa-plus");
+            }
+        })
+}
 
-    function addIngredientForm(e) {
-        e.preventDefault();
+function load_recipe(id) {
+    document.querySelector('#recipe').style.display = 'block';
+    document.querySelector('#recipes').style.display = 'none';
+    fetch(`/recipe/${id}`)
+        .then(response => response.json())
+        .then(recipe => {
+            const element = document.createElement('div');
+            element.innerHTML = `
+                <div class="header">
+                    <h3>${recipe.title}</h3>
+                    <i onclick="addBook(this, ${recipe.id})" class="float-right ${recipe.added ? 'fas fa-bookmark' : 'far fa-bookmark'}"></i>
+                    <h5>${recipe.category}</h5>
+                    <p>Cooking time: ${durationFormat(recipe.time)}</p>
+                </div>
+            `;
+            document.querySelector('#recipe').prepend(element);
+            const image = document.createElement('img');
+            image.setAttribute('src', `${recipe.photo}`);
+            image.setAttribute('width', '100%');
+            document.querySelector('#image').append(image);
+            const ingredients_header = document.createElement('div');
+            ingredients_header.innerHTML = `
+                <div>
+                    <h5>Ingredients:</h5>
+                </div>
+                `;
+            document.getElementById('ingredients').prepend(ingredients_header);
+        })
+    fetch(`/ingredients/${id}`)
+        .then(response => response.json())
+        .then(ingredients => {
+            ingredients.forEach(ingredient => {
+                let box = document.getElementById('ingredients');
+                const el = document.createElement('ul');
+                el.innerHTML = `
+                        <li><i onclick="addList(this, ${ingredient.id})" class="float-right ${ingredient.in_list ? 'fas fa-minus' : 'fas fa-plus'}"></i>${ingredient.amount} ${ingredient.measurement}${ingredient.measurement === " " ? "" : " of" } ${ingredient.ingredient}</li>
+                    `;
 
-        let newForm = ingredientForm[0].cloneNode(true);
-        let formRegex = RegExp(`recipe_ingredients-(\\d){1}-`, 'g');
 
-        formIngredientNum++;
-        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `recipe_ingredients-${formIngredientNum}-`);
-        containerIngredient.insertBefore(newForm, null);
+                // const icon = document.createElement('i'); =
+                // ingredient.className = "float-right ${recipe.added ? 'fas fa-minus' : 'fas fa-plus'}"
+                box.append(el);
+            })
+        })
+    fetch(`/instructions/${id}`)
+        .then(response => response.json())
+        .then(instructions => {
+            instructions.forEach(instruction => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <p>${instruction.step} ${durationFormat(instruction.time)}</p>      
+                `
+                document.querySelector('#recipe').append(div);
+            })
+        })
+}
 
-        totalIngredientForms.setAttribute('value', `${formIngredientNum+1}`);
+function durationFormat(duration) {
+    durationStr = moment.utc(moment.duration(duration).asMilliseconds()).format("HH:mm:ss");
+    const substr = durationStr.split(':');
+    let hours = `${substr[0]}`;
+    if (hours == 0) {
+        hours = '';
+    } else {
+        hours += "hours";
     }
-
-    function removeIngredientForm(e) {
-        e.preventDefault();
-        containerIngredient.removeChild(containerIngredient.lastChild);
+    let minutes = `${substr[1]}`;
+    if (minutes == 0) {
+        minutes = '';
+    } else if (`${minutes[0]}` == 0) {
+        if (`${minutes[1]}` == 1) {
+            minutes = `${minutes[1]}minute`;
+        } else {
+            minutes = `${minutes[1]}minutes`;
+        }
+    } else {
+        minutes += "minutes";
     }
-
-    function addInstructionForm(e) {
-        e.preventDefault();
-
-        let newForm = instructionForm[0].cloneNode(true);
-        let formRegex = RegExp(`recipe_instructions-(\\d){1}-`, 'g');
-
-        formInstructionNum++;
-        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `recipe_instructions-${formInstructionNum}-`);
-        containerInstruction.insertBefore(newForm, null);
-
-        totalInstructionForms.setAttribute('value', `${formInstructionNum+1}`);
+    let seconds = `${substr[2]}`;
+    if (seconds == 0) {
+        seconds = '';
+    } else {
+        seconds += "seconds";
     }
-
-    function removeInstructionForm(e) {
-        e.preventDefault();
-        containerInstruction.removeChild(containerInstruction.lastChild);
-    }
-});
+    return `${hours} ${minutes} ${seconds}`;
+}

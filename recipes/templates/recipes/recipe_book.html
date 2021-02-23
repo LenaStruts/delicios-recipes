@@ -1,0 +1,29 @@
+{% extends "recipes/layout.html" %}
+{% load static %}
+
+{% block body %}
+{% for book in recipe_book %}
+    <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
+            <div class="card mb-4" style="max-width: 700px;">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="{{ book.recipe.photo.url }}" class="card-img" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a class="recipe-detail" href="{% url 'recipe_detail' pk=book.recipe.pk %}">{{ book.recipe.title }}</a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ book.recipe.category }}</h6>
+                            <p class="card-text">Cooking time: {{ book.recipe.time }}</p>
+                            <p class="card-text"><small class="text-muted">{{ book.recipe.published_date }}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+{% endblock %}

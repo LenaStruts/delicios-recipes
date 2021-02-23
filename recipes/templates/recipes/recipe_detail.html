@@ -8,24 +8,38 @@
                     <div class="col-md-4">
                         <img src="{{ recipe.photo.url }}" class="card-img" alt="...">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-8">
                         <div class="card-body">
+                        {% if user.is_authenticated %}
+                        <a class="btn btn-secondary float-right add" id="{{ recipe.pk }}" role="button" alt="Remove from Watchlist">
+                            {% if recipe.recipes.all %}
+                                {% for book in recipe.recipes.all %}
+                                    {% if book.owner == request.user %}
+                                        <i class="fas fa-minus icon"></i>
+                                    {% else %}
+                                        <i class="fas fa-plus icon"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <i class="fas fa-plus icon"></i>
+                            {% endif %}  
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-secondary float-right add" role="button" alt="Remove from Watchlist">
+                            <i class="fas fa-clipboard-list"></i>
+                        </a>
                             <h5 class="card-title">
                                 <a class="recipe-detail">{{ recipe.title }}</a>
                             </h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ recipe.category }}</h6>
                             <p class="card-text">Cooking time: {{ recipe.time }}</p>
-                            <p class="card-text"><small class="text-muted">{{ recipe.published_date }}</small></p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card-body">
                             <h5 class="card-title">
                                 <a class="recipe-detail">Recipe Ingredients:</a>
                             </h5>
                             {% for ingredient in recipe.recipe_ingredients.all %}
                                 <p class="card-text"> - {{ ingredient.amount }} {{ ingredient.measurement }} {{ ingredient.ingredient }}</p>
                             {% endfor %}
+                            <p class="card-text"><small class="text-muted">{{ recipe.published_date }}</small></p>
                         </div>
                     </div>
                 </div>
@@ -42,4 +56,5 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'recipes/index.js' %}"></script>
 {% endblock %}
