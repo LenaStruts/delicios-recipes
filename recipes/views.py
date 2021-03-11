@@ -73,9 +73,18 @@ def ingredients(request, pk):
         ingredients = Ingredients.objects.filter(recipe=recipe)
     except Ingredients.DoesNotExist:
         return JsonResponse({"error": "Ingredients not found."}, status=404)
-    # Return post content
+
     if request.method == "GET": 
         return JsonResponse([ingredient.serialize(request.user) for ingredient in ingredients], safe=False)
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        for ingredient in ingredients:
+            if data.get("in_list") is True:
+                ShoppingList.objects.filter(shopper=request.user, ingredient=ingredient).delete()
+            else:
+                list, created = ShoppingList.objects.get_or_create(shopper=request.user, ingredient=ingredient)
+                list.save()
+        return JsonResponse({"success": "True"}, status=200)
     else:
         return JsonResponse({
             "error": "GET request required."

@@ -49,6 +49,7 @@ class Instructions(models.Model):
 
     def serialize(self):
         return {
+            "id": self.id,
             "step": self.step,
             "time": self.time
         }

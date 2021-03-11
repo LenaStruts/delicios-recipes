@@ -2,22 +2,25 @@
 {% load static %}
 
 {% block body %}
-<div id="recipe" class="col-md-7">
+<div id="recipe" class="container-fluid">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-4 col-sm-8">
             <div id="image">
             </div>
         </div>
-        <div class="col-md-5">
+        <div class="col-lg-3 col-sm-3">
             <div id="ingredients">
             </div>
         </div>
+    </div>
+    <div id="instructions">
     </div>
 </div>
 <div id="recipes">
 <a class="btn btn-secondary" href="{% url 'new_recipe' %}">Add recipe</a>
 {% for recipe in recipes %}
     <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
+        <a class="recipe-detail" id="{{recipe.pk}}">
             <div class="card mb-4" style="max-width: 700px;">
                 <div class="row no-gutters">
                     <div class="col-md-4">
@@ -26,7 +29,7 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a class="recipe-detail" id="{{recipe.pk}}">{{ recipe.title }}</a>
+                                {{ recipe.title }}
                             </h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ recipe.category }}</h6>
                             <p class="card-text">Cooking time: {{ recipe.time }}</p>
@@ -35,7 +38,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
+    </div>
 {% endfor %}
 </div>
 {% endblock %}
