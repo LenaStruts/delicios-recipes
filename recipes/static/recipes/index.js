@@ -3,13 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     link.forEach((element) => {
         element.addEventListener("click", () => {
             id = element.id;
-            load_recipe(id);
+            loadRecipe(id);
         });
     });
-
-    // let button = document.querySelector(".add");
-    // id = button.id;
-    // button.addEventListener('click', () => addBook(id));
 })
 
 function addBook(x, id) {
@@ -23,7 +19,11 @@ function addBook(x, id) {
         .then(response => response.json())
         .then(result => {
             if (result.error) {
-                console.log(error);
+                if (result.error === "You must be logged in!") {
+                    login();
+                } else {
+                    console.log(error);
+                }
             } else {
                 x.classList.toggle("far");
                 x.classList.toggle("fas");
@@ -42,7 +42,11 @@ function addList(x, id, all = false) {
         .then(response => response.json())
         .then(result => {
             if (result.error) {
-                console.log(error);
+                if (result.error === "You must be logged in!") {
+                    login();
+                } else {
+                    console.log(error);
+                }
             } else {
                 x.classList.toggle("fa-minus");
                 x.classList.toggle("fa-plus");
@@ -69,7 +73,7 @@ function addList(x, id, all = false) {
         })
 }
 
-function load_recipe(id) {
+function loadRecipe(id) {
     document.querySelector('#recipe').style.display = 'block';
     document.querySelector('#recipes').style.display = 'none';
     fetch(`/ingredients/${id}`)
@@ -81,10 +85,6 @@ function load_recipe(id) {
                 el.innerHTML = `
                         <li><i onclick="addList(this, ${ingredient.id})" class="ingredient float-right ${ingredient.in_list ? 'fas fa-minus' : 'fas fa-plus'}"></i>${ingredient.amount} ${ingredient.measurement}${ingredient.measurement === " " ? "" : " of" } ${ingredient.ingredient}</li>
                     `;
-
-
-                // const icon = document.createElement('i'); =
-                // ingredient.className = "float-right ${recipe.added ? 'fas fa-minus' : 'fas fa-plus'}"
                 box.append(el);
             });
             fetch(`/recipe/${id}`)
@@ -94,10 +94,10 @@ function load_recipe(id) {
                     element.innerHTML = `
                     <div class="header">
                         <div class="row">
-                        <div class="col-lg-7 col-sm-11">
-                        <h3>${recipe.title}</h3>
-                        <i onclick="addBook(this, ${recipe.id})" class="float-right ${recipe.added ? 'fas fa-bookmark' : 'far fa-bookmark'}"></i>
-                        </div>
+                            <div class="col-lg-7 col-sm-11">
+                            <i onclick="addBook(this, ${recipe.id})" id="bookmarkButton" class="float-right ${recipe.added ? 'fas fa-bookmark' : 'far fa-bookmark'}"></i>
+                                <h3>${recipe.title}</h3>
+                            </div>
                         </div>
                         <h5>${recipe.category}</h5>
                         <p>Cooking time: ${durationFormat(recipe.time)}</p>
@@ -161,7 +161,10 @@ function pauseTimer(id, durationLeft) {
     timers[id].durationLeft = durationLeft;
     clearInterval(timers[id].timeinterval);
     const t = timers[id].t;
-    timers[id].clock.innerHTML = `${t.minutes} minutes ${t.seconds} seconds <i onclick="playTimer('${id}')" class="fas fa-play"></i>`;
+    hours = t.hours;
+    minutes = t.minutes;
+    seconds = t.seconds;
+    timers[id].clock.innerHTML = `${formatTime(hours, minutes, seconds)} <i onclick="playTimer('${id}')" class="fas fa-play"></i>`;
 }
 
 function playTimer(id) {
@@ -171,8 +174,11 @@ function playTimer(id) {
 
     function updateClock() {
         durationLeft = durationLeft - 1;
-        const t = time_remaining(deadline);
-        timers[id].clock.innerHTML = `${t.minutes} minutes ${t.seconds} seconds <i onclick="pauseTimer('${id}', ${durationLeft})" class="fas fa-pause"></i>`;
+        const t = timeRemaining(deadline);
+        hours = t.hours;
+        minutes = t.minutes;
+        seconds = t.seconds;
+        timers[id].clock.innerHTML = `${formatTime(hours, minutes, seconds)} <i onclick="pauseTimer('${id}', ${durationLeft})" class="fas fa-pause"></i>`;
         if (t.total <= 0) {
             clearInterval(timers[id].timeinterval);
             timers[id].clock.innerHTML = `Done <i onclick="stopTimer(${id})" class="fas fa-stop"></i>`;
@@ -193,25 +199,8 @@ function stopTimer(id) {
     timers[id] = undefined;
 }
 
-function runTimer(duration, id) {
-    document.getElementById(`time-${id}`).style.display = 'none';
-    document.getElementById(`alarm-${id}`).className = "";
-    durationAsS = moment.duration(duration).asSeconds();
-    let current_time = Date.parse(new Date());
-    let deadline = new Date(current_time + durationAsS * 1000);
-    let timeinterval;
-    let clock = document.getElementById(`alarm-${id}`);
 
-    function update_clock() {
-        let t = time_remaining(deadline);
-        clock.innerHTML = `${t.minutes} minutes ${t.seconds}seconds <i onclick="pause_clock(timeinterval, t, id)" class="fas fa-pause"></i>`;
-        if (t.total <= 0) { clearInterval(timeinterval); }
-    }
-    update_clock(); // run function once at first to avoid delay
-    timeinterval = setInterval(update_clock, 1000);
-}
-
-function time_remaining(endtime) {
+function timeRemaining(endtime) {
     let t = Date.parse(endtime) - Date.parse(new Date());
     let seconds = Math.floor((t / 1000) % 60);
     let minutes = Math.floor((t / 1000 / 60) % 60);
@@ -221,54 +210,34 @@ function time_remaining(endtime) {
 }
 
 
-// function startTimer(duration, id) {
-//     let timerInterval = null;
-//     let timePassed = 0;
-//     document.getElementById(`time-${id}`).style.display = 'none';
-//     document.getElementById(`alarm-${id}`).className = "";
-//     time = moment.duration(duration).asSeconds();
-//     const TIME_LIMIT = time;
-//     let timeLeft = TIME_LIMIT;
-//     timerInterval = setInterval(() => {
-//         // The amount of time passed increments by one
-//         timePassed = timePassed += 1;
-//         timeLeft = TIME_LIMIT - timePassed;
 
-//         // The time left label is updated
-//         document.getElementById(`alarm-${id}`).innerHTML = `${formatTime(timeLeft)} <i onclick="clearInterval(${timerInterval})" class="fas fa-pause"></i>`;
-//         if (timeLeft < 0) {
-//             clearInterval(timerInterval);
-//             document.getElementById(`alarm-${id}`).innerHTML = "EXPIRED";
-//         }
-//     }, 1000);
+function formatTime(hours, minutes, seconds) {
+    if (hours === 1) {
+        hours = `${hours} hour`;
+    } else if (hours < 1) {
+        hours = '';
+    } else {
+        hours = `${hours} hours`;
+    }
 
-// }
+    if (minutes === 1) {
+        minutes = `${minutes} minute`;
+    } else if (minutes < 1) {
+        minutes = '';
+    } else {
+        minutes = `${minutes} minutes`;
+    }
 
-// function formatTime(time) {
-//     // The largest round integer less than or equal to the result of time divided being by 60.
-//     let minutes = Math.floor(time / 60);
-//     if (minutes === 1) {
-//         minutes = `${minutes} minute`;
-//     } else if (minutes < 1) {
-//         minutes = '';
-//     } else {
-//         minutes = `${minutes} minutes`;
-//     }
-//     // Seconds are the remainder of the time divided by 60 (modulus operator)
-//     let seconds = time % 60;
+    if (seconds === 1) {
+        seconds = `0${seconds} second`;
+    } else if (seconds < 10) {
+        seconds = `0${seconds} seconds`;
+    } else {
+        seconds = `${seconds} seconds`;
+    }
 
-//     // If the value of seconds is less than 10, then display seconds with a leading zero
-//     if (seconds === 1) {
-//         seconds = `0${seconds} second`;
-//     } else if (seconds < 10) {
-//         seconds = `0${seconds} seconds`;
-//     } else {
-//         seconds = `${seconds} seconds`;
-//     }
-
-//     // The output in MM:SS format
-//     return `${minutes} ${seconds}`;
-// }
+    return `${hours} ${minutes} ${seconds}`;
+}
 
 function durationFormat(duration) {
     durationStr = moment.utc(moment.duration(duration).asMilliseconds()).format("HH:mm:ss");
@@ -298,4 +267,8 @@ function durationFormat(duration) {
         seconds += " seconds";
     }
     return `${hours} ${minutes} ${seconds}`;
+}
+
+function login() {
+    document.querySelector('#login').click();
 }

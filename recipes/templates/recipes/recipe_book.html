@@ -2,28 +2,51 @@
 {% load static %}
 
 {% block body %}
-{% for book in recipe_book %}
-    <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
-            <div class="card mb-4" style="max-width: 700px;">
-                <div class="row no-gutters">
-                    <div class="col-md-4">
-                        <img src="{{ book.recipe.photo.url }}" class="card-img" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <a class="recipe-detail" href="{% url 'recipe_detail' pk=book.recipe.pk %}">{{ book.recipe.title }}</a>
-                            </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">{{ book.recipe.category }}</h6>
-                            <p class="card-text">Cooking time: {{ book.recipe.time }}</p>
-                            <p class="card-text"><small class="text-muted">{{ book.recipe.published_date }}</small></p>
-                        </div>
-                    </div>
-                </div>
+<div id="recipe" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4 col-md-8">
+            <div id="image">
             </div>
         </div>
-{% endfor %}
+        <div class="col-lg-3 col-md-3">
+            <div id="ingredients">
+            </div>
+        </div>
+    </div>
+    <div id="instructions">
+    </div>
+</div>
+<div id="recipes" class="container-fluid">
+    <h2>Bookmarked</h2>
+    <div class="row">
+        {% for book in recipe_book %}
+            <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
+                <div class="card mb-4" style="max-width: 700px;">
+                    <a class="recipe-detail" id="{{book.recipe.pk}}">
+                        <div class="row no-gutters">
+                            <div class="col-md-4">
+                                <img src="{{ book.recipe.photo.url }}" class="card-img" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ book.recipe.title }}
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ book.recipe.category }}</h6>
+                                    <p class="card-text">Cooking time: {{ book.recipe.time }}</p>
+                                    <p class="card-text"><small class="text-muted">{{ book.recipe.published_date }}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="{% static 'recipes/index.js' %}"></script>
 {% endblock %}

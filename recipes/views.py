@@ -49,7 +49,6 @@ def recipe_detail(request, pk):
     except Recipe.DoesNotExist:
         return JsonResponse({"error": "Recipe not found."}, status=404)
 
-    # Return post content
     if request.method == "GET":
         return JsonResponse(recipe.serialize(request.user))
     elif request.method == "PUT":
@@ -61,6 +60,10 @@ def recipe_detail(request, pk):
                 book, created = RecipeBook.objects.get_or_create(owner=request.user, recipe=recipe)
                 book.save()
             return JsonResponse({"success": "True"}, status=200)
+        else:
+            return JsonResponse({
+                "error": "You must be logged in!"
+            }, status=400)
     else:
         return JsonResponse({
             "error": "GET or PUT request required."
@@ -77,14 +80,19 @@ def ingredients(request, pk):
     if request.method == "GET": 
         return JsonResponse([ingredient.serialize(request.user) for ingredient in ingredients], safe=False)
     elif request.method == "PUT":
-        data = json.loads(request.body)
-        for ingredient in ingredients:
-            if data.get("in_list") is True:
-                ShoppingList.objects.filter(shopper=request.user, ingredient=ingredient).delete()
-            else:
-                list, created = ShoppingList.objects.get_or_create(shopper=request.user, ingredient=ingredient)
-                list.save()
-        return JsonResponse({"success": "True"}, status=200)
+        if not request.user.is_anonymous:
+            data = json.loads(request.body)
+            for ingredient in ingredients:
+                if data.get("in_list") is True:
+                    ShoppingList.objects.filter(shopper=request.user, ingredient=ingredient).delete()
+                else:
+                    list, created = ShoppingList.objects.get_or_create(shopper=request.user, ingredient=ingredient)
+                    list.save()
+            return JsonResponse({"success": "True"}, status=200)
+        else:
+            return JsonResponse({
+                "error": "You must be logged in!"
+            }, status=400)
     else:
         return JsonResponse({
             "error": "GET request required."
@@ -97,15 +105,19 @@ def ingredient(request, pk):
         ingredient = Ingredients.objects.get(pk=pk)
     except Ingredients.DoesNotExist:
         return JsonResponse({"error": "Ingredients not found."}, status=404)
-    # Return post content
     if request.method == "PUT":
-        data = json.loads(request.body)
-        if data.get("in_list") is True:
-            ShoppingList.objects.filter(shopper=request.user, ingredient=ingredient).delete()
+        if not request.user.is_anonymous:
+            data = json.loads(request.body)
+            if data.get("in_list") is True:
+                ShoppingList.objects.filter(shopper=request.user, ingredient=ingredient).delete()
+            else:
+                list, created = ShoppingList.objects.get_or_create(shopper=request.user, ingredient=ingredient)
+                list.save()
+            return JsonResponse({"success": "True"}, status=200)
         else:
-            list, created = ShoppingList.objects.get_or_create(shopper=request.user, ingredient=ingredient)
-            list.save()
-        return JsonResponse({"success": "True"}, status=200)
+            return JsonResponse({
+                "error": "You must be logged in!"
+            }, status=400)    
     else:
         return JsonResponse({
             "error": "PUT request required."
@@ -119,7 +131,6 @@ def instructions(request, pk):
         instructions = Instructions.objects.filter(recipe=recipe)
     except Instructions.DoesNotExist:
         return JsonResponse({"error": "Instructions not found."}, status=404)
-    # Return post content
     if request.method == "GET":
         return JsonResponse([instruction.serialize() for instruction in instructions], safe=False)
     else:

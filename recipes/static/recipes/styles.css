@@ -7,3 +7,25 @@ select {
     width: 13rem;
     height: 2rem;
 }
+
+#allIngredientButton,
+#bookmarkButton {
+    font-size: 1.5rem;
+}
+
+.ingredient {
+    color: #6c757d;
+}
+
+.list {
+    text-align: center;
+}
+
+.submit {
+    margin: 1rem;
+}
+
+.nav-link {
+    color: #242424;
+    font-size: larger;
+}

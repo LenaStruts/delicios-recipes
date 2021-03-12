@@ -4,11 +4,11 @@
 {% block body %}
 <div id="recipe" class="container-fluid">
     <div class="row">
-        <div class="col-lg-4 col-sm-8">
+        <div class="col-lg-4 col-md-8">
             <div id="image">
             </div>
         </div>
-        <div class="col-lg-3 col-sm-3">
+        <div class="col-lg-3 col-md-3">
             <div id="ingredients">
             </div>
         </div>
@@ -16,31 +16,34 @@
     <div id="instructions">
     </div>
 </div>
-<div id="recipes">
-<a class="btn btn-secondary" href="{% url 'new_recipe' %}">Add recipe</a>
-{% for recipe in recipes %}
-    <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
-        <a class="recipe-detail" id="{{recipe.pk}}">
-            <div class="card mb-4" style="max-width: 700px;">
-                <div class="row no-gutters">
-                    <div class="col-md-4">
-                        <img src="{{ recipe.photo.url }}" class="card-img" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                {{ recipe.title }}
-                            </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">{{ recipe.category }}</h6>
-                            <p class="card-text">Cooking time: {{ recipe.time }}</p>
-                            <p class="card-text"><small class="text-muted">{{ recipe.published_date }}</small></p>
+<div id="recipes" class="container-fluid">
+    <a class="btn btn-outline-dark float-right" href="{% url 'new_recipe' %}">Create new recipe <i class="fas fa-plus"></i></a>
+    <h2>All</h2>
+    <div class="row">
+        {% for recipe in recipes %}
+            <div class="col-lg-6 col-sm-12 d-flex align-items-stretch">
+                <div class="card mb-4" style="max-width: 700px;">
+                    <a class="recipe-detail" id="{{recipe.pk}}">
+                        <div class="row no-gutters">
+                            <div class="col-md-4">
+                                <img src="{{ recipe.photo.url }}" class="card-img" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ recipe.title }}
+                                    </h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ recipe.category }}</h6>
+                                    <p class="card-text">Cooking time: {{ recipe.time }}</p>
+                                    <p class="card-text"><small class="text-muted">{{ recipe.published_date }}</small></p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-        </a>
+        {% endfor %}
     </div>
-{% endfor %}
 </div>
 {% endblock %}
 
