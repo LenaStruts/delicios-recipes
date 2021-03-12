@@ -1,5 +1,5 @@
-# Auctions
-> In this project I worked on creating an auction website using Django framework. 
+# Recipes
+> In this project I worked on creating a recipe website using Django framework. 
 
 ## Table of contents
 * [General info](#general-info)
