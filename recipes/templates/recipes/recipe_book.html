@@ -17,6 +17,7 @@
     </div>
 </div>
 <div id="recipes" class="container-fluid">
+    {% if book %}
     <h2>Bookmarked</h2>
     <div class="row">
         {% for book in recipe_book %}
@@ -43,6 +44,9 @@
             </div>
         {% endfor %}
     </div>
+    {% else %}
+        <h3>There is nothing in your recipe book yet ... </h3>
+    {% endif %}
 </div>
 {% endblock %}
 

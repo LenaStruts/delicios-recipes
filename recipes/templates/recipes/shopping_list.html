@@ -4,6 +4,7 @@
 {% block body %}
 <div class="list col-lg-6 col-sm-12">
         <h2>To buy:</h2>
+        {% if list %}
         <ul class="list-group">
                 {% for item in list %}
                         <li class="list-group-item list-group-item-light d-flex justify-content-between align-items-center">{{ item.ingredient.ingredient }}
@@ -12,6 +13,10 @@
                 
                 {% endfor %}
         </ul>
+        {% else %}
+                <h5>There is nothing in your shopping list yet ... </h5>
+                
+        {% endif %}
 </div>
 {% endblock %}
 
