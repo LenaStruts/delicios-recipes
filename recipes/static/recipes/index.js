@@ -134,7 +134,7 @@ function loadRecipe(id) {
             instructions.forEach(instruction => {
                 const div = document.createElement('ul');
                 div.innerHTML = `
-                    <li>${instruction.step} <span id="time-${instruction.id}">${durationFormat(instruction.time)} </span><i id="watch-${instruction.id}" onclick="startTimer('${instruction.time}', ${instruction.id})" class="fas fa-stopwatch"></i><i id="alarm-${instruction.id}" class=""></i></li>      
+                    <li>${instruction.step} <i id="watch-${instruction.id}" onclick="startTimer('${instruction.time}', ${instruction.id})" class="fas fa-stopwatch"></i><span id="time-${instruction.id}">${durationFormat(instruction.time)} </span><i id="alarm-${instruction.id}" class=""></i></li>      
                 `
                 document.querySelector('#instructions').append(div);
             })
@@ -242,20 +242,28 @@ function formatTime(hours, minutes, seconds) {
 function durationFormat(duration) {
     durationStr = moment.utc(moment.duration(duration).asMilliseconds()).format("HH:mm:ss");
     const substr = durationStr.split(':');
+
     let hours = `${substr[0]}`;
     if (hours == 0) {
         hours = '';
+    } else if (`${hours[0]}` == 0) {
+        if (`${hours[1]}` == 1) {
+            hours = `${hours[1]} hour`;
+        } else {
+            hours = `${hours[1]} hours`;
+        }
     } else {
         hours += "hours";
     }
+
     let minutes = `${substr[1]}`;
     if (minutes == 0) {
         minutes = '';
     } else if (`${minutes[0]}` == 0) {
         if (`${minutes[1]}` == 1) {
-            minutes = `${minutes[1]}minute`;
+            minutes = `${minutes[1]} minute`;
         } else {
-            minutes = `${minutes[1]}minutes`;
+            minutes = `${minutes[1]} minutes`;
         }
     } else {
         minutes += " minutes";
@@ -263,6 +271,12 @@ function durationFormat(duration) {
     let seconds = `${substr[2]}`;
     if (seconds == 0) {
         seconds = '';
+    } else if (`${seconds[0]}` == 0) {
+        if (`${seconds[1]}` == 1) {
+            seconds = `${seconds[1]} second`;
+        } else {
+            seconds = `${seconds[1]} seconds`;
+        }
     } else {
         seconds += " seconds";
     }

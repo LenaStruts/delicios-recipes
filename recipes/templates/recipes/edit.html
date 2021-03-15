@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block body %}
-    <h3>New recipe</h3>
+    <h3 class="new-recipe">New recipe</h3>
     <form id="form-container" action="." method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="container-fluid">

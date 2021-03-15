@@ -1,5 +1,5 @@
 # Recipes
-> In this project I worked on creating a recipe website using Django framework. 
+> In this project I worked on creating the website with recipes using Django framework. 
 
 ## Table of contents
 * [General info](#general-info)
@@ -14,12 +14,13 @@
 * [Contact](#contact)
 
 ## General info
-The purpose of this project is to design a recipe website, where the users can share their favourite recipes. 
+The purpose of this project is to design the recipes website, where users can share their favourite recipes. 
 
 ## Screenshots
 ![Screenshot1](https://user-images.githubusercontent.com/61382735/110971790-96312d80-835b-11eb-8995-9409cc95f56a.png)
 ![Screenshot2](https://user-images.githubusercontent.com/61382735/110971883-b234cf00-835b-11eb-94a0-b468bc0de2f4.png)
-![Screenshot3](https://user-images.githubusercontent.com/61382735/110971883-b234cf00-835b-11eb-94a0-b468bc0de2f4.png)
+![Screenshot3](https://user-images.githubusercontent.com/61382735/111152322-dfb68e00-8590-11eb-8936-c37771aa2bac.png)
+![Screenshot4](https://user-images.githubusercontent.com/61382735/111152498-17bdd100-8591-11eb-9f53-0f3111961563.png)
 
 ## Technologies
 * Python - version 3.6
@@ -59,6 +60,7 @@ See your website at:
 * View other users' recipes, add those you like to your recipe book to simpify the later search 
 * Add recipes' ingredients into the shopping list, so that you can have it ready for the whole menu
 * Being able to use the timer for each cooking step and run them simultaneously if needed
+* The shopping list consists of sorted ingredients and the amounts are summed up for all recipes
 
 To-do list:
 * improve design 
@@ -66,23 +68,23 @@ To-do list:
 
 ## Files and directories
 - `Main Directory (final_project)` 
-    - `capstone` - Updated the project settings and the main url file.
-        - `.env` - 
+    - `capstone` - updated the project settings and the main url file
+        - `.env` - contains project environment variables, gitignored
 
-    - `recipes` - recipes app directory.
-        - `models.py` - Contains models that keep information about users and recipes, users' preferences. In addition, there are methods for serializing data
-        - `urls.py` - Consits of app urls and api routes 
-        - `views.py` - There are not only view functions, but also GET and PUT requests functions as well as view functions for authentication(like login, register and logout)
+    - `recipes` - recipes app directory
+        - `models.py` - contains models that keep information about users and recipes, users' preferences. In addition, there are methods for serializing data
+        - `urls.py` - consits of app urls and api routes 
+        - `views.py` - there are not only view functions, but also GET and PUT requests functions as well as view functions for authentication (like login, register and logout)
     
-        - `static` - Holds all static files.
+        - `static` - holds all static files.
             - `styles.css` - style rules for the project
             - `form.js` - contains functions for manipulating the form
             - `index.js` - holds all functions for manipulation the DOM
             - `Information_Block.ogg` - timer sound
         - `Templates` - contains all html files (in particular, edit.html holds the form for creating a new recipe)
     - `media` - directory that holds images of dishes
-    - `gitignore` - Files to ignore for git
-    - `requirements.txt` - packages required to run the web-sitr
+    - `gitignore` - files to ignore for git
+    - `requirements.txt` - packages required for the project
     - `Procfile` - file for deploying on Heroku
 
 #### Justification
